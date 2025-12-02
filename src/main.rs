@@ -156,10 +156,15 @@ async fn main() {
 
                         save_message(&event.data, &name).await.unwrap();
 
+                        let message = Message {
+                            message_type: MessageType::Chat,
+                            data: format!("{}: {}", name, event.data),
+                        };
+
                         // Send to others with their name
                         if let Err(e) = handle
                             .to(room)
-                            .text(format!("{}: {}", name, event.data))
+                            .text(serde_json::to_string(&message).unwrap())
                             .await
                         {
                             eprintln!("Failed to broadcast message: {}", e);
